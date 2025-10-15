@@ -1,6 +1,6 @@
 # Threat Event: Accidental Exposure of Assets to the Internet
 
-<img width="1540" height="1028" alt="HP_SOC_III_bordered" src="https://github.com/user-attachments/assets/b451da10-f342-4ce9-8b44-ef6f21622686" />
+<img width="1348" height="772" alt="NSG_III_bordered" src="https://github.com/user-attachments/assets/41c222b2-8520-41cf-a7d3-8f3d6740a4d2" />
 
 ## Introduction
 
@@ -24,34 +24,82 @@ You can delete the default RDP rule and create another inbound security rule tha
 Just as a recap, we have our azure tenant, we have our subscription, we have our resource group with everything inside of it. We have a virtual network and we have a subnet. The connected to the subnet, we have a virtual machine. The virtual machine’s network security group, or cloud firewall, is completely opened up to the public internet. The firewall inside the virtual machine is completely opened up to the public internet.
 
 ---
-## Table:
-| **Parameter**       | **Description**                                                              |
-|---------------------|------------------------------------------------------------------------------|
-| **Name**| DeviceLogonEvents|
-| **Info**|https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicelogonevents-table|
-| **Purpose**| Used to detect failed and successful logons by threat actors. |
+## Appendix: Map Visualization
+
+While the honeypot was created to focus on a specific scenario, the maps included here were generated at the tenant level in a different lab. These maps are visualizations that should give you an idea of the different things that are happening in your environment from a geographic standpoint. You can create maps for anything; it just depends on what’s important to your organization and what you want to see. They also serve as examples of similar detection methods that could apply to the honeypot scenario. In summary, these maps cover different aspects of the tenant's security, such as authentication attempts at the tenant and VM level, resource creation, and malicious flows.
+
+### Entra ID (Azure) Authentication Success
+
+```kql
+SigninLogs
+| where ResultType == 0
+| summarize LoginCount = count() by Identity, Latitude = tostring(LocationDetails["geoCoordinates"]["latitude"]),  Longitude = tostring(LocationDetails["geoCoordinates"]["longitude"]), City = tostring(LocationDetails["city"]), Country = tostring(LocationDetails["countryOrRegion"])
+| project Identity, Latitude, Longitude, City, Country, LoginCount, friendly_label = strcat(Identity, " - ", City, ", ", Country)
+```
+<img width="2571" height="1264" alt="Entra ID (Azure) Authentication Success" src="https://github.com/user-attachments/assets/355e71bf-fd64-4e77-82bd-a0206897dc92" />
+
+---
+
+### Entra ID (Azure) Authentication Failures
+
+```kql
+SigninLogs
+| where ResultType != 0
+| summarize LoginCount = count() by Identity, Latitude = tostring(LocationDetails["geoCoordinates"]["latitude"]),  Longitude = tostring(LocationDetails["geoCoordinates"]["longitude"]), City = tostring(LocationDetails["city"]), Country = tostring(LocationDetails["countryOrRegion"])
+| project Identity, Latitude, Longitude, City, Country, LoginCount, friendly_label = strcat(Identity, " - ", City, ", ", Country)
+```
+<img width="2052" height="739" alt="Entra_ID_Authentication_Failures_bordered" src="https://github.com/user-attachments/assets/4b532b6c-f8e5-4181-a839-f25bf59bc332" />
+
+---
+
+### Azure Resource Creation
+
+xxx
+
+### VM Authentication Failures
+
+xxx
+
+### Entra ID (Azure) Authentication Failures
+
+xxx
 
 ---
 
 ## Related Queries:
 ```kql
-// Installer name == tor-browser-windows-x86_64-portable-(version).exe
-// Detect the installer being downloaded
-DeviceFileEvents
-| where FileName startswith "tor"
+// Entra ID (Azure) Authentication Success
+SigninLogs
+| where ResultType == 0
+| summarize LoginCount = count() by Identity, Latitude = tostring(LocationDetails["geoCoordinates"]["latitude"]),  Longitude = tostring(LocationDetails["geoCoordinates"]["longitude"]), City = tostring(LocationDetails["city"]), Country = tostring(LocationDetails["countryOrRegion"])
+| project Identity, Latitude, Longitude, City, Country, LoginCount, friendly_label = strcat(Identity, " - ", City, ", ", Country)
 
-// TOR Browser being silently installed
-// Take note of two spaces before the /S (I don't know why)
-DeviceProcessEvents
-| where ProcessCommandLine contains "tor-browser-windows-x86_64-portable-14.0.1.exe  /S"
-| project Timestamp, DeviceName, ActionType, FileName, ProcessCommandLine
+// Entra ID (Azure) Authentication Failures
+SigninLogs
+| where ResultType != 0
+| summarize LoginCount = count() by Identity, Latitude = tostring(LocationDetails["geoCoordinates"]["latitude"]), Longitude = tostring(LocationDetails["geoCoordinates"]["longitude"]), City = tostring(LocationDetails["city"]), Country = tostring(LocationDetails["countryOrRegion"])
+| project Identity, Latitude, Longitude, City, Country, LoginCount, friendly_label = strcat(Identity, " - ", City, ", ", Country)
 
-// TOR Browser or service was successfully installed and is present on the disk
-DeviceFileEvents
-| where FileName has_any ("tor.exe", "firefox.exe")
-| project  Timestamp, DeviceName, RequestAccountName, ActionType, InitiatingProcessCommandLine
+// Azure Resource Creation
+// Only works for IPv4 Addresses
+let GeoIPDB_FULL = _GetWatchlist("geoip");
+let AzureActivityRecords = AzureActivity
+| where not(Caller matches regex @"^[{(]?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}[)}]?$")
+| where CallerIpAddress matches regex @"\b(?:(?:[0-9]{1,3}\.){3}[0-9]{1,3})\b"
+| where OperationNameValue endswith "WRITE" and (ActivityStatusValue == "Success" or ActivityStatusValue == "Succeeded")
+| summarize ResouceCreationCount = count() by Caller, CallerIpAddress;
+AzureActivityRecords
+| evaluate ipv4_lookup(GeoIPDB_FULL, CallerIpAddress, network)
+| project Caller,
+    CallerPrefix = split(Caller, "@")[0],  // Splits Caller UPN and takes the part before @
+    CallerIpAddress,
+    ResouceCreationCount,
+    Country = countryname,
+    Latitude = latitude,
+    Longitude = longitude,
+    friendly_label = strcat(split(Caller, "@")[0], " - ", cityname, ", ", countryname)
 
-// TOR Browser or service was launched
+// VM Authentication Failures
 DeviceProcessEvents
 | where ProcessCommandLine has_any("tor.exe","firefox.exe")
 | project  Timestamp, DeviceName, AccountName, ActionType, ProcessCommandLine
