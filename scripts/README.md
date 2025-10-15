@@ -1,4 +1,4 @@
-# Remediation Scripts
+# Map Visualization Scripts
 
 This folder contains the map visualization JSON scripts
 
