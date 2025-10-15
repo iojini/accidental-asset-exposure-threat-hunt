@@ -38,6 +38,8 @@ SigninLogs
 ```
 <img width="2571" height="1264" alt="Entra ID (Azure) Authentication Success" src="https://github.com/user-attachments/assets/355e71bf-fd64-4e77-82bd-a0206897dc92" />
 
+[Entra ID Authentication Success Map Visualization JSON Script](https://github.com/iojini/azure-honeypot-soc-threat-hunt/blob/main/scripts/directory-login-successes.json)  
+
 ---
 
 ### Entra ID (Azure) Authentication Failures
@@ -50,6 +52,8 @@ SigninLogs
 ```
 
 <img width="2340" height="1227" alt="Entra ID (Azure) Authentication Failures II" src="https://github.com/user-attachments/assets/eeaf4a89-b4cb-4ebf-b1e0-7a96b1095ac1" />
+
+[Entra ID Authentication Failure Map Visualization JSON Script](https://github.com/iojini/azure-honeypot-soc-threat-hunt/blob/main/scripts/directory-login-failures.json)  
 
 ---
 
@@ -76,6 +80,8 @@ AzureActivityRecords
 
 <img width="2265" height="1248" alt="Azure Resource Creation" src="https://github.com/user-attachments/assets/330091d6-835a-429f-8568-670ef5c369f6" />
 
+[Azure Resource Creation Map Visualization JSON Script](https://github.com/iojini/azure-honeypot-soc-threat-hunt/blob/main/scripts/azure-resource-creation.json)  
+
 ---
 
 ### VM Authentication Failures
@@ -90,6 +96,8 @@ DeviceLogonEvents
 ```
 
 <img width="2326" height="1242" alt="VM Authentication Failures" src="https://github.com/user-attachments/assets/04e4506d-70f3-4c3f-872b-12adcbd65090" />
+
+[VM Authentication Failure Map Visualization JSON Script](https://github.com/iojini/azure-honeypot-soc-threat-hunt/blob/main/scripts/vm-authentication-failures.json)  
 
 ---
 
@@ -108,6 +116,8 @@ MaliciousFlows
 ```
 
 <img width="2333" height="1244" alt="Malicious Traffic Entering the Network" src="https://github.com/user-attachments/assets/5547c750-d50c-4d55-b320-8cf4b3fb1786" />
+
+[Malicious Traffic Map Visualization JSON Script](https://github.com/iojini/azure-honeypot-soc-threat-hunt/blob/main/scripts/allowed-inbound-malicious-flows.json)  
 
 ---
 
