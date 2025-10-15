@@ -4,7 +4,7 @@
 
 ## Introduction
 
-For this threat hunt scenario, a honeypot was built in Azure by creating a virtual machine and completely opening up the virtual machine’s network security group to the internet. The virtual machine's internal firewall was also disabled.
+For this threat hunt, a honeypot was built in Azure by creating a virtual machine and completely opening up the virtual machine’s network security group to the internet. The virtual machine's internal firewall was also disabled.
 
 ---
 ## Building a SOC + Honeypot in Azure (Live Traffic)
