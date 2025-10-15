@@ -48,40 +48,14 @@ SigninLogs
 | summarize LoginCount = count() by Identity, Latitude = tostring(LocationDetails["geoCoordinates"]["latitude"]),  Longitude = tostring(LocationDetails["geoCoordinates"]["longitude"]), City = tostring(LocationDetails["city"]), Country = tostring(LocationDetails["countryOrRegion"])
 | project Identity, Latitude, Longitude, City, Country, LoginCount, friendly_label = strcat(Identity, " - ", City, ", ", Country)
 ```
-<img width="2052" height="739" alt="Entra_ID_Authentication_Failures_bordered" src="https://github.com/user-attachments/assets/4b532b6c-f8e5-4181-a839-f25bf59bc332" />
+
+<img width="2340" height="1227" alt="Entra ID (Azure) Authentication Failures II" src="https://github.com/user-attachments/assets/eeaf4a89-b4cb-4ebf-b1e0-7a96b1095ac1" />
 
 ---
 
 ### Azure Resource Creation
 
-xxx
-
-### VM Authentication Failures
-
-xxx
-
-### Entra ID (Azure) Authentication Failures
-
-xxx
-
----
-
-## Related Queries:
 ```kql
-// Entra ID (Azure) Authentication Success
-SigninLogs
-| where ResultType == 0
-| summarize LoginCount = count() by Identity, Latitude = tostring(LocationDetails["geoCoordinates"]["latitude"]),  Longitude = tostring(LocationDetails["geoCoordinates"]["longitude"]), City = tostring(LocationDetails["city"]), Country = tostring(LocationDetails["countryOrRegion"])
-| project Identity, Latitude, Longitude, City, Country, LoginCount, friendly_label = strcat(Identity, " - ", City, ", ", Country)
-
-// Entra ID (Azure) Authentication Failures
-SigninLogs
-| where ResultType != 0
-| summarize LoginCount = count() by Identity, Latitude = tostring(LocationDetails["geoCoordinates"]["latitude"]), Longitude = tostring(LocationDetails["geoCoordinates"]["longitude"]), City = tostring(LocationDetails["city"]), Country = tostring(LocationDetails["countryOrRegion"])
-| project Identity, Latitude, Longitude, City, Country, LoginCount, friendly_label = strcat(Identity, " - ", City, ", ", Country)
-
-// Azure Resource Creation
-// Only works for IPv4 Addresses
 let GeoIPDB_FULL = _GetWatchlist("geoip");
 let AzureActivityRecords = AzureActivity
 | where not(Caller matches regex @"^[{(]?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}[)}]?$")
@@ -98,23 +72,42 @@ AzureActivityRecords
     Latitude = latitude,
     Longitude = longitude,
     friendly_label = strcat(split(Caller, "@")[0], " - ", cityname, ", ", countryname)
-
-// VM Authentication Failures
-DeviceProcessEvents
-| where ProcessCommandLine has_any("tor.exe","firefox.exe")
-| project  Timestamp, DeviceName, AccountName, ActionType, ProcessCommandLine
-
-// TOR Browser or service is being used and is actively creating network connections
-DeviceNetworkEvents
-| where InitiatingProcessFileName in~ ("tor.exe", "firefox.exe")
-| where RemotePort in (9001, 9030, 9040, 9050, 9051, 9150)
-| project Timestamp, DeviceName, InitiatingProcessAccountName, InitiatingProcessFileName, RemoteIP, RemotePort, RemoteUrl
-| order by Timestamp desc
-
-// User shopping list was created and, changed, or deleted
-DeviceFileEvents
-| where FileName contains "shopping-list.txt"
 ```
+
+<img width="2265" height="1248" alt="Azure Resource Creation" src="https://github.com/user-attachments/assets/330091d6-835a-429f-8568-670ef5c369f6" />
+
+---
+
+### VM Authentication Failures
+
+```kql
+let GeoIPDB_FULL = _GetWatchlist("geoip");
+DeviceLogonEvents
+| where ActionType == "LogonFailed"
+| order by TimeGenerated desc
+| evaluate ipv4_lookup(GeoIPDB_FULL, RemoteIP, network)
+| summarize LoginAttempts = count() by RemoteIP, City = cityname, Country = countryname, friendly_location = strcat(cityname, " (", countryname, ")"), Latitude = latitude, Longitude = longitude;
+```
+
+<img width="2326" height="1242" alt="VM Authentication Failures" src="https://github.com/user-attachments/assets/04e4506d-70f3-4c3f-872b-12adcbd65090" />
+
+---
+
+### Malicious Traffic Entering the Network
+
+```kql
+let GeoIPDB_FULL = _GetWatchlist("geoip");
+let MaliciousFlows = AzureNetworkAnalytics_CL
+| where FlowType_s == "MaliciousFlow"
+//| where SrcIP_s == "10.0.0.5"
+| order by TimeGenerated desc
+| project TimeGenerated, FlowType = FlowType_s, IpAddress = SrcIP_s, DestinationIpAddress = DestIP_s, DestinationPort = DestPort_d, Protocol = L7Protocol_s, NSGRuleMatched = NSGRules_s;
+MaliciousFlows
+| evaluate ipv4_lookup(GeoIPDB_FULL, IpAddress, network)
+| project TimeGenerated, FlowType, IpAddress, DestinationIpAddress, DestinationPort, Protocol, NSGRuleMatched, latitude, longitude, city = cityname, country = countryname, friendly_location = strcat(cityname, " (", countryname, ")")
+```
+
+<img width="2333" height="1244" alt="Malicious Traffic Entering the Network" src="https://github.com/user-attachments/assets/5547c750-d50c-4d55-b320-8cf4b3fb1786" />
 
 ---
 
