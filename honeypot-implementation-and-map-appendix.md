@@ -130,25 +130,3 @@ MaliciousFlows
 [Malicious Traffic Map Visualization JSON Script](https://github.com/iojini/azure-honeypot-soc-threat-hunt/blob/main/scripts/allowed-inbound-malicious-flows.json)  
 
 ---
-
-## Created By:
-- **Author Name**: Irene Ojini
-- **Author Contact**: https://www.linkedin.com/in/iojini/
-- **Date**: October 2025
-
-## Validated By:
-- **Reviewer Name**: 
-- **Reviewer Contact**: 
-- **Validation Date**: 
-
----
-
-## Additional Notes:
-- **None**
-
----
-
-## Revision History:
-| **Version** | **Changes**                   | **Date**         | **Modified By**   |
-|-------------|-------------------------------|------------------|-------------------|
-| 1.0         | Initial draft                  | `October 2025`  | `Irene Ojini`   
