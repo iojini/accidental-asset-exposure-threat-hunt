@@ -90,51 +90,39 @@ DeviceLogonEvents
 ```
 ---
 
-### 5. Searched the `DeviceInfo` table to identify internet-facing instances of the device
+### 5. Searched the `DeviceLogonEvents` Table for failed network logon attempts by account owner
 
-Searched the DeviceInfo table and discovered that the device ("irene-test-vm-m") was internet-facing for several days, with the most recent occurrence at 2025-10-16T17:36:02.4227451Z.
+There were zero (0) failed logons for the ‘labuser’ account, indicating that a brute force attempt for this account didn’t take place, and a 1-time password guess is unlikely (i.e., this likely represents legitimate activity by the actual user; however, can't rule out that an attacker may already know the username and password obtained through other means including phishing, credential dumps, password reuse, etc).
 
 **Query used to locate events:**
 
 ```kql
-DeviceInfo
+DeviceLogonEvents
 | where DeviceName == "irene-test-vm-m"
-| where IsInternetFacing == true
-| order by Timestamp desc
-```
-<img width="3292" height="1436" alt="IF1" src="https://github.com/user-attachments/assets/c84a74ea-4f85-4f59-a6d0-99dd2217f316" />
+| where LogonType == "Network"
+| where ActionType == "LogonFailed"
+| where AccountName == "labuser"
+| summarize count()
 
+```
 ---
 
-### 6. Searched the `DeviceInfo` table to identify internet-facing instances of the device
+### 6. Searched the `DeviceLogonEvents` table to identify successful network logons by the account owner and the source of the logon activity 
 
-Searched the DeviceInfo table and discovered that the device ("irene-test-vm-m") was internet-facing for several days, with the most recent occurrence at 2025-10-16T17:36:02.4227451Z.
+Searched for remote IP addresses that successfully logged in as 'labuser' to assess whether the activity originated from unusual or unexpected locations. Based on the results, the IP address was consistent with expected/legitimate sources.
 
-**Query used to locate events:**
-
-```kql
-DeviceInfo
-| where DeviceName == "irene-test-vm-m"
-| where IsInternetFacing == true
-| order by Timestamp desc
-```
-<img width="3292" height="1436" alt="IF1" src="https://github.com/user-attachments/assets/c84a74ea-4f85-4f59-a6d0-99dd2217f316" />
-
----
-
-### 7. Searched the `DeviceInfo` table to identify internet-facing instances of the device
-
-Searched the DeviceInfo table and discovered that the device ("irene-test-vm-m") was internet-facing for several days, with the most recent occurrence at 2025-10-16T17:36:02.4227451Z.
 
 **Query used to locate events:**
 
 ```kql
-DeviceInfo
+DeviceLogonEvents
 | where DeviceName == "irene-test-vm-m"
-| where IsInternetFacing == true
-| order by Timestamp desc
+| where LogonType == "Network"
+| where ActionType == "LogonSuccess"
+| where AccountName == "labuser"
+| summarize LoginCount = count() by DeviceName, ActionType, AccountName, RemoteIP
 ```
-<img width="3292" height="1436" alt="IF1" src="https://github.com/user-attachments/assets/c84a74ea-4f85-4f59-a6d0-99dd2217f316" />
+<img width="2848" height="453" alt="IF_3" src="https://github.com/user-attachments/assets/516575b1-d820-4c1a-9389-9d4a00543a5a" />
 
 ---
 
