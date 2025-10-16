@@ -67,22 +67,74 @@ DeviceLogonEvents
 ```
 ---
 
-### 4. Searched the `DeviceNetworkEvents` Table for TOR Network Connections
+### 4. Searched the `DeviceLogonEvents` Table for successful network logons
 
-Searched for any indication the TOR browser was used to establish a connection using any of the known TOR ports. At `2025-10-04T19:21:06.6841946Z`, an employee on the "irene-test-vm-m" device successfully established a connection to the remote IP address `51.159.186.85` on port `9001`. The connection was initiated by the process `tor.exe`, located in the folder `c:\users\labuser\desktop\tor browser\browser\torbrowser\tor\tor.exe`. There were a couple of other connections to sites over port `443`.
+The only successful remote network logons in the last 30 days was for the labuser account (53 total).
 
 **Query used to locate events:**
 
 ```kql
-DeviceNetworkEvents
+//Successful logons
+DeviceLogonEvents
 | where DeviceName == "irene-test-vm-m"
-| where InitiatingProcessAccountName != "system"
-| where InitiatingProcessFileName in ("tor.exe", "firefox.exe")
-| where RemotePort in ("9001", "9030", "9040", "9050", "9051", "9150", "80", "443")
-| project Timestamp, DeviceName, InitiatingProcessAccountName, ActionType, RemoteIP, RemotePort, RemoteUrl, InitiatingProcessFileName, InitiatingProcessFolderPath
+| where LogonType == "Network"
+| where ActionType == "LogonSuccess"
+
+//Number of successful logons by account owner
+DeviceLogonEvents
+| where DeviceName == "irene-test-vm-m"
+| where LogonType == "Network"
+| where ActionType == "LogonSuccess"
+| where AccountName == "labuser"
+| summarize count()
+```
+---
+
+### 5. Searched the `DeviceInfo` table to identify internet-facing instances of the device
+
+Searched the DeviceInfo table and discovered that the device ("irene-test-vm-m") was internet-facing for several days, with the most recent occurrence at 2025-10-16T17:36:02.4227451Z.
+
+**Query used to locate events:**
+
+```kql
+DeviceInfo
+| where DeviceName == "irene-test-vm-m"
+| where IsInternetFacing == true
 | order by Timestamp desc
 ```
-<img width="3717" height="1465" alt="TOR4" src="https://github.com/user-attachments/assets/2ceeb167-9115-46c7-8b36-26e41da42f92" />
+<img width="3292" height="1436" alt="IF1" src="https://github.com/user-attachments/assets/c84a74ea-4f85-4f59-a6d0-99dd2217f316" />
+
+---
+
+### 6. Searched the `DeviceInfo` table to identify internet-facing instances of the device
+
+Searched the DeviceInfo table and discovered that the device ("irene-test-vm-m") was internet-facing for several days, with the most recent occurrence at 2025-10-16T17:36:02.4227451Z.
+
+**Query used to locate events:**
+
+```kql
+DeviceInfo
+| where DeviceName == "irene-test-vm-m"
+| where IsInternetFacing == true
+| order by Timestamp desc
+```
+<img width="3292" height="1436" alt="IF1" src="https://github.com/user-attachments/assets/c84a74ea-4f85-4f59-a6d0-99dd2217f316" />
+
+---
+
+### 7. Searched the `DeviceInfo` table to identify internet-facing instances of the device
+
+Searched the DeviceInfo table and discovered that the device ("irene-test-vm-m") was internet-facing for several days, with the most recent occurrence at 2025-10-16T17:36:02.4227451Z.
+
+**Query used to locate events:**
+
+```kql
+DeviceInfo
+| where DeviceName == "irene-test-vm-m"
+| where IsInternetFacing == true
+| order by Timestamp desc
+```
+<img width="3292" height="1436" alt="IF1" src="https://github.com/user-attachments/assets/c84a74ea-4f85-4f59-a6d0-99dd2217f316" />
 
 ---
 
