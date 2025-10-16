@@ -46,6 +46,8 @@ SigninLogs
 
 ### Entra ID (Azure) Authentication Failures
 
+This is a geographic visualization of failed sign-in attempts and the data is aggregated by counting the number of failed login attempts per unique combination of user and location. This can be used for security monitoring to help brute force attacks (i.e., multiple failed logins from specific locations), password spraying campaigns (e.g., widespread failed attempts), and attack patterns (i.e., the geographic distribution of threat actors). The results are sorted by login count (highest first) and highlights which accounts are under the most aggressive attack and where the attacks are originating from. This allows security teams to block IPs/regions, enable MFA for targeted accounts, investigate suspicious patterns, and respond to active threats.
+
 ```kql
 SigninLogs
 | where ResultType != 0
