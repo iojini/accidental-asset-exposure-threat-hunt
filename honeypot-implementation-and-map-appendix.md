@@ -63,7 +63,7 @@ SigninLogs
 
 ### Azure Resource Creation
 
-This is a geographic visualization of successful Azure resource creation by geographic location using a custom GeoIP database and the data is aggregated by counting the resource operations per user and IP address. This can be used for security monitoring to help detect unauthorized resource provisioning from unusual locations, identify potential insider threats or compromised accounts, and track infrastructure changes from unexpected geographic regions. It can also be used to visualize where your team is deploying resources, understand geographic distribution of Azure administration, and monitor multi-region deployment patterns. Unlike the previous map visualizations that used built-in location data from sign-in logs, this uses a custom GeoIP watchlist for potentially more accurate or tailored location mapping of Azure management activities.
+This is a geographic visualization of successful Azure resource creation using a custom GeoIP database and the data is aggregated by counting the resource operations per user and IP address. This can be used for security monitoring to help detect unauthorized resource provisioning from unusual locations, identify potential insider threats or compromised accounts, and track infrastructure changes from unexpected geographic regions. It can also be used to visualize where your team is deploying resources, understand geographic distribution of Azure administration, and monitor multi-region deployment patterns. Unlike the previous map visualizations that used built-in location data from sign-in logs, this uses a custom GeoIP watchlist for potentially more accurate or tailored location mapping of Azure management activities.
 
 ```kql
 let GeoIPDB_FULL = _GetWatchlist("geoip");
@@ -91,6 +91,8 @@ AzureActivityRecords
 ---
 
 ### VM Authentication Failures
+
+This is a geographic visualization of failed device logon attempts from external IP addresses and the data is aggregated by counting the number of failed login attempts by source IP address and location. This can be used for security monitoring to help detect failed device logon patterns that may include RDP, SMB, or SSH brute force attempts. Unlike the previous map visualizations, this focuses on device/endpoint logon attempts (not cloud sign-ins), tracks endpoint-level authentication failures, detects attacks against on-premises or hybrid infrastructure, and uses the RemoteIP field (external attacker IPs) rather than CallerIpAddress. This can help security teams identify compromised endpoints under attack, block attacking IP ranges/countries at firewall level, detect lateral movement attempts, and prioritize threat response based on attack volume.
 
 ```kql
 let GeoIPDB_FULL = _GetWatchlist("geoip");
