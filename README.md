@@ -52,21 +52,19 @@ DeviceLogonEvents
 
 ---
 
-### 3. Searched the `DeviceProcessEvents` Table for TOR Browser Execution
+### 3. Searched the `DeviceLogonEvents` Table for successful logons from suspicious IP addresses
 
-Searched for any indication that user "labuser" actually opened the TOR browser. There was evidence that they did open it at `2025-10-04T19:20:39.986612Z`. There were several other instances of `firefox.exe` (TOR) as well as `tor.exe` spawned afterwards.
+Searched for any indication of successful logons from the IP addresses with the most failed login attempts. Based on the logs returned, no successful logons were identified from these IP addresses.
 
 **Query used to locate events:**
 
 ```kql
-DeviceProcessEvents
-| where DeviceName == "irene-test-vm-m"
-| where FileName has_any ("tor.exe", "firefox.exe", "tor-browser.exe")
-| project Timestamp, DeviceName, AccountName, ActionType, FileName, FolderPath, ProcessCommandLine
-| order by Timestamp desc
+let RemoteIPsInQuestion = dynamic(["185.39.19.56","45.227.254.130", "185.243.96.107", "182.160.114.213", "188.253.1.20"]);
+DeviceLogonEvents
+| where LogonType has_any("Network", "Interactive", "RemoteInteractive", "Unlock")
+| where ActionType == "LogonSuccess"
+| where RemoteIP has_any(RemoteIPsInQuestion)
 ```
-<img width="3154" height="1534" alt="TOR3" src="https://github.com/user-attachments/assets/805a97c7-b644-4400-9c5e-40916cf12531" />
-
 ---
 
 ### 4. Searched the `DeviceNetworkEvents` Table for TOR Network Connections
