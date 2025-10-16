@@ -30,6 +30,8 @@ While the honeypot was created to focus on a specific scenario, the maps include
 
 ### Entra ID (Azure) Authentication Success
 
+This is a geographic visualization of successful user sign-ins and the data is aggregated by counting the number of successful login attempts per unique combination of user and location. This can be used for security monitoring to help identify unusual login locations, detect potential account compromises (e.g., logins from unexpected countries), visualize user access patterns geographically, and monitor distributed workforce access.
+
 ```kql
 SigninLogs
 | where ResultType == 0
