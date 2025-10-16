@@ -111,6 +111,8 @@ DeviceLogonEvents
 
 ### Malicious Traffic Entering the Network
 
+This is a geographic visualization of malicious network traffic flows detected in Azure and the data is aggregated by source IP address and location to reveal where the attacks are originating from. This can be used for security monitoring to help detect the geographic distribution of threat actors, common attack vectors (ports/protocols being targeted), NSG rule effectiveness (which rules are catching threats), and attack patterns. It can also be used to identify external threats targeting Azure resources, command & control (C2) communication attempts, malware beaconing or data exfiltration, and port scanning and reconnaissance activity.
+
 ```kql
 let GeoIPDB_FULL = _GetWatchlist("geoip");
 let MaliciousFlows = AzureNetworkAnalytics_CL
