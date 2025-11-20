@@ -52,7 +52,7 @@ DeviceLogonEvents
 
 ---
 
-### 3. Searched the `DeviceLogonEvents` Table for successful logons from suspicious IP addresses
+### 3. Searched the `DeviceLogonEvents` table for successful logons from suspicious IP addresses
 
 Searched for any indication of successful logons from the IP addresses with the most failed login attempts. Based on the logs returned, no successful logons were identified from these IP addresses.
 
@@ -67,7 +67,7 @@ DeviceLogonEvents
 ```
 ---
 
-### 4. Searched the `DeviceLogonEvents` Table for successful network logons
+### 4. Searched the `DeviceLogonEvents` table for successful network logons
 
 The only successful remote network logons in the last 30 days was for the labuser account (53 total).
 
@@ -90,7 +90,7 @@ DeviceLogonEvents
 ```
 ---
 
-### 5. Searched the `DeviceLogonEvents` Table for failed network logon attempts by account owner
+### 5. Searched the `DeviceLogonEvents` table for failed network logon attempts by account owner
 
 There were zero (0) failed logons for the ‘labuser’ account, indicating that a brute force attempt for this account didn’t take place, and a 1-time password guess is unlikely (i.e., this likely represents legitimate activity by the actual user; however, can't rule out that an attacker may already know the username and password obtained through other means including phishing, credential dumps, password reuse, etc).
 
