@@ -4,7 +4,7 @@
 
 ##  Scenario
 
-During routine maintenance, the security team is tasked with investigating any VMs in the shared services cluster (e.g., VMs handling DNS, Domain Services, DHCP, etc.) that have mistakenly been exposed to the public internet. During the time the devices were unknowingly exposed to the internet, it’s possible that someone could have brute-force logged into some of the devices since the older devices do not have account lockout configured for excessive failed login attempts. The goal is to identify any misconfigured VMs and check for potential brute-force login attempts/successes from external sources.
+During routine maintenance, the security team is tasked with investigating any VMs in the shared services cluster (e.g., VMs handling DNS, Domain Services, DHCP, etc.) that have mistakenly been exposed to the public internet. During the time the devices were unknowingly exposed to the internet, it’s possible that someone could have brute-force logged into some of the devices since the older devices do not have account lockout configured for excessive failed login attempts. The goal of this investigation is to identify any misconfigured VMs and check for potential brute-force login attempts/successes from external sources.
 
 - [Scenario Creation](https://github.com/iojini/accidental-asset-exposure-threat-hunt/blob/main/honeypot-implementation-and-map-appendix.md)
 
